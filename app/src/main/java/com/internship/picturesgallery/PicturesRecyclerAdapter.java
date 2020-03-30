@@ -2,6 +2,8 @@ package com.internship.picturesgallery;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,11 +41,12 @@ class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecyclerAdapt
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewHolder holder, int position) {
         int size = screenHeiht/4;
+        Drawable drawable =new ColorDrawable(ContextCompat.getColor(holder.image.getContext(), R.color.colorPrimaryDark));
         if (holder.image.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) size = screenHeiht/2;
         Picasso.get()
                 .load(new File(list.get(position)))
+                .placeholder(R.drawable.ic_placeholder)
                 .resize(size, size)
-                .placeholder(R.drawable.ic_launcher_background)
                 .noFade()
                 .into(holder.image);
     }
