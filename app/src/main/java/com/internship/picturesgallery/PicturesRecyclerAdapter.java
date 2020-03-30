@@ -1,6 +1,7 @@
 package com.internship.picturesgallery;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,8 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecyclerAdapter.RecyclerViewHolder> {
-    List<String> list;
-    int screenHeiht;
+    private List<String> list;
+    private int screenHeiht;
+    View.OnClickListener onClickListener;
 
     public PicturesRecyclerAdapter(List<String> list, int screenHeiht) {
         this.list = list;
@@ -30,16 +32,19 @@ class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecyclerAdapt
     public RecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.picture_item, parent, false);
         final RecyclerViewHolder recyclerViewHolder = new RecyclerViewHolder(view);
+        view.setOnClickListener(v -> onClickListener.onClick(v));
         return recyclerViewHolder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewHolder holder, int position) {
         int size = screenHeiht/4;
+        if (holder.image.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) size = screenHeiht/2;
         Picasso.get()
                 .load(new File(list.get(position)))
                 .resize(size, size)
                 .placeholder(R.drawable.ic_launcher_background)
+                .noFade()
                 .into(holder.image);
     }
 
@@ -51,6 +56,14 @@ class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecyclerAdapt
     @Override
     public long getItemId(int position) {
         return super.getItemId(position);
+    }
+
+    public void setOnClickListener(View.OnClickListener onClickListener){
+        this.onClickListener = onClickListener;
+    }
+
+    public List<String> getList() {
+        return list;
     }
 
     public static class RecyclerViewHolder extends RecyclerView.ViewHolder {

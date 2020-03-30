@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -42,26 +43,36 @@ public class MainActivity extends AppCompatActivity {
         final Point point = new Point();
         getWindowManager().getDefaultDisplay().getSize(point);
         int spanCount = 4;
-        int size = point.y;
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             spanCount = 2;
-            size = point.x;
-
         }
-        PicturesRecyclerAdapter picturesRecyclerAdapter = new PicturesRecyclerAdapter(getAllShownImagesPath(), size);
+        List<String> list = getAllShownImagesPath();
+        PicturesRecyclerAdapter picturesRecyclerAdapter = new PicturesRecyclerAdapter(list, point.y);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, spanCount, GridLayoutManager.HORIZONTAL, false);
-
+        picturesRecyclerAdapter.setOnClickListener(getOnClickListenet(picturesRecyclerAdapter.getList(), layoutManager));
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new PictureItemDecorator());
         recyclerView.setAdapter(picturesRecyclerAdapter);
-
     }
+
+
+    private View.OnClickListener getOnClickListenet(final List<String> list, RecyclerView.LayoutManager layoutManager) {
+        final Point point = new Point();
+        getWindowManager().getDefaultDisplay().getSize(point);
+        return v -> {
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.setDataAndType(Uri.parse(list.get(layoutManager.getPosition(v)) ), "image/*");
+            startActivity(intent);
+        };
+    }
+
 
     private List<String> getAllShownImagesPath() {
         String[] projection = {MediaStore.MediaColumns.DATA,
                 MediaStore.Images.Media.DISPLAY_NAME};
 
-        try(Cursor cursor = getContentResolver().query(image_media_uri, projection, null,
+        try (Cursor cursor = getContentResolver().query(image_media_uri, projection, null,
                 null, null)) {
 
             final int column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
@@ -71,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
                 imagesList.add(absolutePathOfImage);
             }
             return imagesList;
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
     }
