@@ -10,14 +10,19 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.squareup.picasso.Picasso;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecyclerAdapter.RecyclerViewHolder> {
+    List<String> list;
+    int screenHeiht;
 
-    int size = 10;
-    public PicturesRecyclerAdapter() {
-
+    public PicturesRecyclerAdapter(List<String> list, int screenHeiht) {
+        this.list = list;
+        this.screenHeiht = screenHeiht;
     }
 
     @NonNull
@@ -30,16 +35,17 @@ class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecyclerAdapt
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewHolder holder, int position) {
-        ArrayList<Integer> list = new ArrayList<>();
-        list.add(R.color.colorPrimaryDark);
-        list.add(R.color.colorAccent);
-        list.add(R.color.colorPrimary);
-        holder.image.setBackgroundColor(ContextCompat.getColor(holder.image.getContext(), list.get(position%3)));
+        int size = screenHeiht/4;
+        Picasso.get()
+                .load(new File(list.get(position)))
+                .resize(size, size)
+                .placeholder(R.drawable.ic_launcher_background)
+                .into(holder.image);
     }
 
     @Override
     public int getItemCount() {
-        return size;
+        return list.size();
     }
 
     @Override
@@ -48,6 +54,7 @@ class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecyclerAdapt
     }
 
     public static class RecyclerViewHolder extends RecyclerView.ViewHolder {
+
         private final ImageView image;
         public RecyclerViewHolder(@NonNull View itemView) {
             super(itemView);
