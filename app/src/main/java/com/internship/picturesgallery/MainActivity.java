@@ -26,6 +26,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+
 public class MainActivity extends AppCompatActivity {
     public final static int SPAN_PORTRAIT_QUANTITY = 4;
     private final static int SPAN_LANDSCAPE_QUANTITY = 2;
@@ -34,6 +39,9 @@ public class MainActivity extends AppCompatActivity {
     private final static Uri IMAGE_MEDIA_URI = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
     private final static String FULL_IMAGE_VIEW_INTENT_TYPE = "image/*";
     private final static String TAG_DIALOG = "OpenImageDialogFragment";
+
+    private Disposable pathLoadingDisposable;
+    PicturesRecyclerAdapter picturesRecyclerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +55,8 @@ public class MainActivity extends AppCompatActivity {
 
         final RecyclerView recyclerView = findViewById(R.id.pictures_recycler);
 
-        final PicturesRecyclerAdapter picturesRecyclerAdapter
-                = new PicturesRecyclerAdapter(getAllShownImagesPath(), getScreenHeight(), getSpanCount());
+        picturesRecyclerAdapter
+                = new PicturesRecyclerAdapter(loadImagesPathWithRx(), getScreenHeight(), getSpanCount());
         final RecyclerView.LayoutManager layoutManager
                 = new GridLayoutManager(this, getSpanCount(), GridLayoutManager.HORIZONTAL, false);
 
@@ -57,6 +65,13 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new PictureItemDecorator());
         recyclerView.setAdapter(picturesRecyclerAdapter);
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (pathLoadingDisposable != null && !pathLoadingDisposable.isDisposed())
+            pathLoadingDisposable.dispose();
+        super.onDestroy();
     }
 
     public static void picassoImageLoader(File sourceFile, ImageView imageView) {
@@ -105,16 +120,31 @@ public class MainActivity extends AppCompatActivity {
     private List<String> getAllShownImagesPath() {
         final String[] projection = {MediaStore.MediaColumns.DATA,
                 MediaStore.Images.Media.DISPLAY_NAME};
-        final List<String> imagesList = new ArrayList<>();
+        final List<String> imagesPathList = new ArrayList<>();
         try (Cursor cursor = getContentResolver().query(IMAGE_MEDIA_URI, projection, null,
                 null, null)) {
             final int columnIndexData = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
             while (cursor.moveToNext()) {
                 String absolutePathOfImage = cursor.getString(columnIndexData);
-                imagesList.add(0, absolutePathOfImage);
+                imagesPathList.add(0, absolutePathOfImage);
             }
         }
-        return imagesList;
+        return imagesPathList;
+    }
+
+    private List<String> loadImagesPathWithRx() {
+        if (pathLoadingDisposable != null && !pathLoadingDisposable.isDisposed())
+            pathLoadingDisposable.dispose();
+        final List<String> imagesPathList = new ArrayList<>();
+        pathLoadingDisposable = Single.fromCallable(this::getAllShownImagesPath)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(loadedPathList -> {
+                    imagesPathList.clear();
+                    imagesPathList.addAll(loadedPathList);
+                    picturesRecyclerAdapter.notifyDataSetChanged();
+                });
+        return imagesPathList;
     }
 
     private View.OnClickListener getOnClickImageListener(final List<String> imagesList, final RecyclerView.LayoutManager layoutManager) {
