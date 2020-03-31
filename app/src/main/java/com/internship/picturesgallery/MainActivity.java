@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private final static String TAG_DIALOG = "OpenImageDialogFragment";
 
     private Disposable pathLoadingDisposable;
-    PicturesRecyclerAdapter picturesRecyclerAdapter;
+    private PicturesRecyclerAdapter picturesRecyclerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,8 +60,8 @@ public class MainActivity extends AppCompatActivity {
         final RecyclerView.LayoutManager layoutManager
                 = new GridLayoutManager(this, getSpanCount(), GridLayoutManager.HORIZONTAL, false);
 
-        picturesRecyclerAdapter.setOnClickListener(getOnClickImageListener(picturesRecyclerAdapter.getList(), layoutManager));
-        picturesRecyclerAdapter.setOnLongClickListener(getOnLongClickImageListener(picturesRecyclerAdapter.getList(), layoutManager));
+        picturesRecyclerAdapter.setOnClickListener(getOnClickImageListener(picturesRecyclerAdapter.getPathList(), layoutManager));
+        picturesRecyclerAdapter.setOnLongClickListener(getOnLongClickImageListener(picturesRecyclerAdapter.getPathList(), layoutManager));
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new PictureItemDecorator());
         recyclerView.setAdapter(picturesRecyclerAdapter);

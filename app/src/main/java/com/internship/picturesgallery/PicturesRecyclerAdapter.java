@@ -53,7 +53,7 @@ final class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecycle
         this.onLongClickListener = onLongClickListener;
     }
 
-    public List<String> getList() {
+    public List<String> getPathList() {
         return pathList;
     }
 
