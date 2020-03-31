@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private final static int PERMISSION_REQUEST_CODE = 1;
     private final static Uri IMAGE_MEDIA_URI = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
     private final static String FULL_IMAGE_VIEW_INTENT_TYPE = "image/*";
-    private static final String TAG_DIALOG = "OpenImageDialogFragment";
+    private final static String TAG_DIALOG = "OpenImageDialogFragment";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
