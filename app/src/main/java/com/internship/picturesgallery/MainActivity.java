@@ -48,9 +48,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (!checkForPermissions()) {
+        if (!isPermissionGranted()) {
+            checkForPermissions();
             Toast.makeText(this, getString(R.string.permissions_lack_toast), Toast.LENGTH_SHORT).show();
             finish();
+            return;
         }
 
         final RecyclerView recyclerView = findViewById(R.id.pictures_recycler);
@@ -92,13 +94,11 @@ public class MainActivity extends AppCompatActivity {
                 .into(imageView);
     }
 
-    private boolean checkForPermissions() {
-        if (isPermissionGranted()) return true;
+    private void checkForPermissions() {
+        if (isPermissionGranted()) return;
         else ActivityCompat.requestPermissions(MainActivity.this,
                 new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                 PERMISSION_REQUEST_CODE);
-
-        return isPermissionGranted();
     }
 
     private boolean isPermissionGranted() {
