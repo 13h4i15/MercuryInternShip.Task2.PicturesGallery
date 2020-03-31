@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">PicturesGallery</string>
-    <string name="action_settings">Settings</string>
+    <string name="permissions_lack_toast">App doesn\'t have needed permissions</string>
 </resources>

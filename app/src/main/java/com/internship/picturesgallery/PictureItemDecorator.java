@@ -4,13 +4,12 @@ import android.graphics.Rect;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-class PictureItemDecorator extends RecyclerView.ItemDecoration {
+final class PictureItemDecorator extends RecyclerView.ItemDecoration {
     @Override
     public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
-        int dimen = (int)view.getResources().getDimension(R.dimen.picture_item_margin);
+        int dimen = (int) view.getResources().getDimension(R.dimen.picture_item_margin);
         outRect.set(dimen, dimen, dimen, dimen);
     }
 }

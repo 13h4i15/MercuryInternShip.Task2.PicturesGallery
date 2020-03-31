@@ -1,32 +1,26 @@
 package com.internship.picturesgallery;
 
-import android.content.Context;
-import android.content.res.Configuration;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.squareup.picasso.Picasso;
-
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
-class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecyclerAdapter.RecyclerViewHolder> {
-    private List<String> list;
-    private int screenHeiht;
-    View.OnClickListener onClickListener;
+final class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecyclerAdapter.RecyclerViewHolder> {
+    private final List<String> list;
+    private final int screenHeight, spanCount;
+    private View.OnClickListener onClickListener;
+    private View.OnLongClickListener onLongClickListener;
 
-    public PicturesRecyclerAdapter(List<String> list, int screenHeiht) {
+    public PicturesRecyclerAdapter(List<String> list, int screenHeight, int spanCount) {
         this.list = list;
-        this.screenHeiht = screenHeiht;
+        this.screenHeight = screenHeight;
+        this.spanCount = spanCount;
     }
 
     @NonNull
@@ -34,21 +28,16 @@ class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecyclerAdapt
     public RecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.picture_item, parent, false);
         final RecyclerViewHolder recyclerViewHolder = new RecyclerViewHolder(view);
-        view.setOnClickListener(v -> onClickListener.onClick(v));
+        view.setOnClickListener(onClickListener);
+        view.setOnLongClickListener(onLongClickListener);
         return recyclerViewHolder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewHolder holder, int position) {
-        int size = screenHeiht/4;
-        Drawable drawable =new ColorDrawable(ContextCompat.getColor(holder.image.getContext(), R.color.colorPrimaryDark));
-        if (holder.image.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) size = screenHeiht/2;
-        Picasso.get()
-                .load(new File(list.get(position)))
-                .placeholder(R.drawable.ic_placeholder)
-                .resize(size, size)
-                .noFade()
-                .into(holder.image);
+        final int size = screenHeight / spanCount - ((8 + (spanCount != MainActivity.SPAN_PORTRAIT_QUANTITY ? 6 : 0)) *
+                (int) holder.image.getResources().getDimension(R.dimen.picture_item_margin));
+        MainActivity.picassoImageLoader(new File(list.get(position)), holder.image, size);
     }
 
     @Override
@@ -56,25 +45,23 @@ class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecyclerAdapt
         return list.size();
     }
 
-    @Override
-    public long getItemId(int position) {
-        return super.getItemId(position);
+    public void setOnClickListener(View.OnClickListener onClickListener) {
+        this.onClickListener = onClickListener;
     }
 
-    public void setOnClickListener(View.OnClickListener onClickListener){
-        this.onClickListener = onClickListener;
+    public void setOnLongClickListener(View.OnLongClickListener onLongClickListener) {
+        this.onLongClickListener = onLongClickListener;
     }
 
     public List<String> getList() {
         return list;
     }
 
-    public static class RecyclerViewHolder extends RecyclerView.ViewHolder {
-
+    public final static class RecyclerViewHolder extends RecyclerView.ViewHolder {
         private final ImageView image;
+
         public RecyclerViewHolder(@NonNull View itemView) {
             super(itemView);
-
             image = itemView.findViewById(R.id.picture_element);
         }
     }
