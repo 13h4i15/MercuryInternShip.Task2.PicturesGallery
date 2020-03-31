@@ -19,7 +19,6 @@ public class FullImageViewFragment extends AppCompatDialogFragment {
 
     private String picturePath;
 
-
     public static FullImageViewFragment newInstance(String pictureUrlParameter) {
         FullImageViewFragment fragment = new FullImageViewFragment();
         Bundle args = new Bundle();
