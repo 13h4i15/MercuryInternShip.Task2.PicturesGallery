@@ -52,8 +52,8 @@ public class MainActivity extends AppCompatActivity {
         final RecyclerView.LayoutManager layoutManager
                 = new GridLayoutManager(this, getSpanCount(), GridLayoutManager.HORIZONTAL, false);
 
-        picturesRecyclerAdapter.setOnClickListener(getOnClickListener(picturesRecyclerAdapter.getList(), layoutManager));
-        picturesRecyclerAdapter.setOnLongClickListener(getOnLongClickListener(picturesRecyclerAdapter.getList(), layoutManager));
+        picturesRecyclerAdapter.setOnClickListener(getOnClickImageListener(picturesRecyclerAdapter.getList(), layoutManager));
+        picturesRecyclerAdapter.setOnLongClickListener(getOnLongClickImageListener(picturesRecyclerAdapter.getList(), layoutManager));
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new PictureItemDecorator());
         recyclerView.setAdapter(picturesRecyclerAdapter);
@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
         return imagesList;
     }
 
-    private View.OnClickListener getOnClickListener(final List<String> imagesList, final RecyclerView.LayoutManager layoutManager) {
+    private View.OnClickListener getOnClickImageListener(final List<String> imagesList, final RecyclerView.LayoutManager layoutManager) {
         return view -> {
             final Intent imageViewIntent = new Intent();
             imageViewIntent.setAction(Intent.ACTION_VIEW);
@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
-    private View.OnLongClickListener getOnLongClickListener(final List<String> imagesList, final RecyclerView.LayoutManager layoutManager) {
+    private View.OnLongClickListener getOnLongClickImageListener(final List<String> imagesList, final RecyclerView.LayoutManager layoutManager) {
         return view -> {
             final FullImageViewFragment fullImageViewFragment = FullImageViewFragment.newInstance(getPathFromListByView(imagesList, layoutManager, view));
             final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
