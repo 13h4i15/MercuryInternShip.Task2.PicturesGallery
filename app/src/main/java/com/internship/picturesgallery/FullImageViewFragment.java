@@ -36,16 +36,16 @@ public class FullImageViewFragment extends AppCompatDialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.fragment_full_image_view, null);
 
-        Toolbar toolbar = view.findViewById(R.id.toolbar);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(v -> dismiss());
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("");
-
         if (getArguments() != null) {
             picturePath = getArguments().getString(IMAGE_PATH_PARAMETER);
         }
 
         MainActivity.picassoImageLoader(new File(picturePath), view.findViewById(R.id.fragment_picture_element));
+
+        Toolbar toolbar = view.findViewById(R.id.toolbar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        toolbar.setNavigationOnClickListener(v -> dismiss());
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("");
 
         builder.setView(view);
         return builder.create();
