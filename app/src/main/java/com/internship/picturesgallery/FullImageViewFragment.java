@@ -9,10 +9,10 @@ import androidx.appcompat.app.AppCompatDialogFragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 
@@ -44,9 +44,17 @@ public class FullImageViewFragment extends AppCompatDialogFragment {
         }
 
         ImageView pictureView = view.findViewById(R.id.fragment_picture_element);
-        MainActivity.picassoImageLoader(picturePathFile, pictureView);
+        picassoImageLoader(picturePathFile, pictureView);
         pictureView.setOnClickListener(v -> dismiss());
 
         return builder.setView(view).create();
+    }
+
+    public static void picassoImageLoader(File sourceFile, ImageView imageView) {
+        Picasso.get()
+                .load(sourceFile)
+                .placeholder(R.drawable.ic_placeholder)
+                .noFade()
+                .into(imageView);
     }
 }

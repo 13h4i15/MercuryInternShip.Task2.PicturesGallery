@@ -57,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
         final RecyclerView.LayoutManager layoutManager
                 = new GridLayoutManager(this, getSpanCount(), GridLayoutManager.HORIZONTAL, false);
 
+        if (checkForPermissions()) loadImagesPathWithRxInAdapter();
+
         picturesRecyclerAdapter.setOnClickListener(getOnClickImageListener(picturesRecyclerAdapter.getPathList(), layoutManager));
         picturesRecyclerAdapter.setOnLongClickListener(getOnLongClickImageListener(picturesRecyclerAdapter.getPathList(), layoutManager));
         recyclerView.setLayoutManager(layoutManager);
@@ -81,14 +83,6 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    public static void picassoImageLoader(File sourceFile, ImageView imageView) {
-        Picasso.get()
-                .load(sourceFile)
-                .placeholder(R.drawable.ic_placeholder)
-                .noFade()
-                .into(imageView);
-    }
-
     public static void picassoImageLoader(File sourceFile, ImageView imageView, int size) {
         Picasso.get()
                 .load(sourceFile)
@@ -99,11 +93,11 @@ public class MainActivity extends AppCompatActivity {
                 .into(imageView);
     }
 
-    private void checkForPermissions() {
-        if (isPermissionGranted()) return;
-        else ActivityCompat.requestPermissions(MainActivity.this,
+    private boolean checkForPermissions() {
+        if (!isPermissionGranted()) ActivityCompat.requestPermissions(MainActivity.this,
                 new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                 PERMISSION_REQUEST_CODE);
+        return isPermissionGranted();
     }
 
     private boolean isPermissionGranted() {
