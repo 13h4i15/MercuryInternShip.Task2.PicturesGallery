@@ -89,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
                 .placeholder(R.drawable.ic_placeholder)
                 .resize(size, size)
                 .centerCrop()
-                .noFade()
                 .into(imageView);
     }
 

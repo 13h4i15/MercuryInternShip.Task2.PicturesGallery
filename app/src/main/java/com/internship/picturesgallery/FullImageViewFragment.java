@@ -54,7 +54,6 @@ public class FullImageViewFragment extends AppCompatDialogFragment {
         Picasso.get()
                 .load(sourceFile)
                 .placeholder(R.drawable.ic_placeholder)
-                .noFade()
                 .into(imageView);
     }
 }
