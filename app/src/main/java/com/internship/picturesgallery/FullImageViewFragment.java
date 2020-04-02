@@ -49,12 +49,4 @@ public class FullImageViewFragment extends AppCompatDialogFragment {
 
         return builder.setView(view).create();
     }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Window window = getDialog().getWindow();
-        if(window == null) return;
-        WindowManager.LayoutParams lp = window.getAttributes();
-    }
 }
