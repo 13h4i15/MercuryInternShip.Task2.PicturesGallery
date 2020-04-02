@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,14 +17,21 @@ final class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecycle
     private final List<String> pathList = new ArrayList<>();
     private View.OnClickListener onClickListener;
     private View.OnLongClickListener onLongClickListener;
+    private int lastClickedImagePosition;
 
     @NonNull
     @Override
     public RecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.picture_item, parent, false);
         final RecyclerViewHolder recyclerViewHolder = new RecyclerViewHolder(view);
-        view.setOnClickListener(onClickListener);
-        view.setOnLongClickListener(onLongClickListener);
+        view.setOnClickListener(v -> {
+            lastClickedImagePosition = recyclerViewHolder.getAdapterPosition();
+            onClickListener.onClick(v);
+        });
+        view.setOnLongClickListener(v -> {
+            lastClickedImagePosition = recyclerViewHolder.getAdapterPosition();
+            return onLongClickListener.onLongClick(v);
+        });
         return recyclerViewHolder;
     }
 
@@ -45,14 +53,18 @@ final class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecycle
         this.onLongClickListener = onLongClickListener;
     }
 
-    public List<String> getPathList() {
-        return pathList;
-    }
-
     public void setPathList(List<String> pathList) {
         this.pathList.clear();
         this.pathList.addAll(pathList);
         notifyDataSetChanged();
+    }
+
+    public String getLastClickedImagePath() {
+        try {
+            return pathList.get(lastClickedImagePosition);
+        } catch (IndexOutOfBoundsException ignore) {
+            return null;
+        }
     }
 
     public final static class RecyclerViewHolder extends RecyclerView.ViewHolder {

@@ -53,8 +53,8 @@ public class MainActivity extends AppCompatActivity {
 
         if (checkForPermissions()) loadImagesPathWithRxInAdapter();
 
-        picturesRecyclerAdapter.setOnClickListener(getOnClickImageListener(picturesRecyclerAdapter.getPathList(), layoutManager));
-        picturesRecyclerAdapter.setOnLongClickListener(getOnLongClickImageListener(picturesRecyclerAdapter.getPathList(), layoutManager));
+        picturesRecyclerAdapter.setOnClickListener(getOnClickImageListener());
+        picturesRecyclerAdapter.setOnLongClickListener(getOnLongClickImageListener());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new PictureItemDecorator());
         recyclerView.setAdapter(picturesRecyclerAdapter);
@@ -127,25 +127,21 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    private View.OnClickListener getOnClickImageListener(final List<String> imagesList, final RecyclerView.LayoutManager layoutManager) {
+    private View.OnClickListener getOnClickImageListener() {
         return view -> {
             final Intent imageViewIntent = new Intent();
             imageViewIntent.setAction(Intent.ACTION_VIEW);
-            imageViewIntent.setDataAndType(Uri.parse(getPathFromListByView(imagesList, layoutManager, view)), FULL_IMAGE_VIEW_INTENT_TYPE);
+            imageViewIntent.setDataAndType(Uri.parse(picturesRecyclerAdapter.getLastClickedImagePath()), FULL_IMAGE_VIEW_INTENT_TYPE);
             startActivity(imageViewIntent);
         };
     }
 
-    private View.OnLongClickListener getOnLongClickImageListener(final List<String> imagesList, final RecyclerView.LayoutManager layoutManager) {
+    private View.OnLongClickListener getOnLongClickImageListener() {
         return view -> {
-            final FullImageViewFragment fullImageViewFragment = FullImageViewFragment.newInstance(getPathFromListByView(imagesList, layoutManager, view));
+            final FullImageViewFragment fullImageViewFragment = FullImageViewFragment.newInstance(picturesRecyclerAdapter.getLastClickedImagePath());
             final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fullImageViewFragment.show(fragmentTransaction, TAG_DIALOG);
             return true;
         };
-    }
-
-    private String getPathFromListByView(final List<String> imagesList, final RecyclerView.LayoutManager layoutManager, View view) {
-        return imagesList.get(layoutManager.getPosition(view));
     }
 }
