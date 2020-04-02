@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">PicturesGallery</string>
     <string name="permissions_lack_toast">App doesn\'t have needed permissions</string>
+    <string name="image_loading_error">Can\'t load this image</string>
 </resources>
