@@ -50,7 +50,7 @@ public class FullImageViewFragment extends AppCompatDialogFragment {
         return builder.setView(view).create();
     }
 
-    public static void picassoImageLoader(File sourceFile, ImageView imageView) {
+    private static void picassoImageLoader(File sourceFile, ImageView imageView) {
         Picasso.get()
                 .load(sourceFile)
                 .placeholder(R.drawable.ic_placeholder)

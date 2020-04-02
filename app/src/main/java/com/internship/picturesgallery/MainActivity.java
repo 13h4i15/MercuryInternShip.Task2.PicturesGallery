@@ -3,9 +3,7 @@ package com.internship.picturesgallery;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.database.Cursor;
-import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -33,8 +31,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
-    public final static int SPAN_PORTRAIT_QUANTITY = 4;
-    private final static int SPAN_LANDSCAPE_QUANTITY = 2;
     private final static int PERMISSION_REQUEST_CODE = 1;
     private final static Uri IMAGE_MEDIA_URI = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
     private final static String FULL_IMAGE_VIEW_INTENT_TYPE = "image/*";
@@ -48,14 +44,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        checkForPermissions();
-
         final RecyclerView recyclerView = findViewById(R.id.pictures_recycler);
 
         picturesRecyclerAdapter
                 = new PicturesRecyclerAdapter();
         final RecyclerView.LayoutManager layoutManager
-                = new GridLayoutManager(this, getSpanCount(), GridLayoutManager.HORIZONTAL, false);
+                = new GridLayoutManager(this, getResources().getInteger(R.integer.span_count), GridLayoutManager.HORIZONTAL, false);
 
         if (checkForPermissions()) loadImagesPathWithRxInAdapter();
 
@@ -93,20 +87,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean checkForPermissions() {
-        if (!isPermissionGranted()) ActivityCompat.requestPermissions(MainActivity.this,
-                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                PERMISSION_REQUEST_CODE);
-        return isPermissionGranted();
+        if (!isPermissionGranted()) {
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    PERMISSION_REQUEST_CODE);
+            return false;
+        }
+        return true;
     }
 
     private boolean isPermissionGranted() {
         return ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private int getSpanCount() {
-        return getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ?
-                SPAN_LANDSCAPE_QUANTITY : SPAN_PORTRAIT_QUANTITY;
     }
 
     private List<String> getAllShownImagesPath() {
