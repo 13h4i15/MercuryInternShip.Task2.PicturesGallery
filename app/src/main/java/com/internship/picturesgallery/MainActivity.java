@@ -4,8 +4,10 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ImageView;
@@ -22,8 +24,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileNotFoundException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Single;
@@ -101,16 +109,16 @@ public class MainActivity extends AppCompatActivity {
                 == PackageManager.PERMISSION_GRANTED;
     }
 
-    private List<String> getAllShownImagesPath() {
-        final String[] projection = {MediaStore.MediaColumns.DATA,
-                MediaStore.Images.Media.DISPLAY_NAME};
-        final List<String> imagesPathList = new ArrayList<>();
-        try (Cursor cursor = getContentResolver().query(IMAGE_MEDIA_URI, projection, null,
-                null, null)) {
-            final int columnIndexData = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-            while (cursor.moveToNext()) {
-                String absolutePathOfImage = cursor.getString(columnIndexData);
-                imagesPathList.add(0, absolutePathOfImage);
+    private List<File> getAllShownImagesPath() {
+        //final String filePath = "/storage/emulated/0/DCIM/Camera";
+        final String filePath = "/storage/emulated/0/VK/Downloads";
+        File[] fileArray = new File(filePath).listFiles();
+        final List<File> imagesPathList = new ArrayList<>();
+        Pattern pattern = Pattern.compile("\\.jpg|\\.png|\\.gif");
+        for (File i : fileArray) {
+            Matcher matcher = pattern.matcher(i.toString());
+            if (matcher.find()) {
+                imagesPathList.add(0, i);
             }
         }
         return imagesPathList;
@@ -122,25 +130,22 @@ public class MainActivity extends AppCompatActivity {
         pathLoadingDisposable = Single.fromCallable(this::getAllShownImagesPath)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(loadedPathList -> {
-                    picturesRecyclerAdapter.setPathList(loadedPathList);
-                });
+                .subscribe(loadedPathList -> picturesRecyclerAdapter.setPathList(loadedPathList));
     }
 
     private View.OnClickListener getOnClickImageListener() {
         return view -> {
             final Intent imageViewIntent = new Intent();
             imageViewIntent.setAction(Intent.ACTION_VIEW);
-            imageViewIntent.setDataAndType(Uri.parse(picturesRecyclerAdapter.getLastClickedImagePath()), FULL_IMAGE_VIEW_INTENT_TYPE);
+            imageViewIntent.setDataAndType(Uri.parse(picturesRecyclerAdapter.getLastClickedImagePath().getPath()), FULL_IMAGE_VIEW_INTENT_TYPE);
             startActivity(imageViewIntent);
         };
     }
 
     private View.OnLongClickListener getOnLongClickImageListener() {
         return view -> {
-            final FullImageViewFragment fullImageViewFragment = FullImageViewFragment.newInstance(picturesRecyclerAdapter.getLastClickedImagePath());
-            final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fullImageViewFragment.show(fragmentTransaction, TAG_DIALOG);
+            final FullImageViewFragment fullImageViewFragment = FullImageViewFragment.newInstance(picturesRecyclerAdapter.getLastClickedImagePath().getPath());
+            fullImageViewFragment.show(getSupportFragmentManager(), TAG_DIALOG);
             return true;
         };
     }

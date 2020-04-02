@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 final class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecyclerAdapter.RecyclerViewHolder> {
-    private final List<String> pathList = new ArrayList<>();
+    private final List<File> pathList = new ArrayList<>();
     private View.OnClickListener onClickListener;
     private View.OnLongClickListener onLongClickListener;
     private int lastClickedImagePosition;
@@ -37,7 +37,7 @@ final class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecycle
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewHolder holder, int position) {
-        MainActivity.picassoImageLoader(new File(pathList.get(position)), holder.image);
+        MainActivity.picassoImageLoader(pathList.get(position), holder.image);
     }
 
     @Override
@@ -53,13 +53,13 @@ final class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecycle
         this.onLongClickListener = onLongClickListener;
     }
 
-    public void setPathList(List<String> pathList) {
+    public void setPathList(List<File> pathList) {
         this.pathList.clear();
         this.pathList.addAll(pathList);
         notifyDataSetChanged();
     }
 
-    public String getLastClickedImagePath() {
+    public File getLastClickedImagePath() {
         try {
             return pathList.get(lastClickedImagePosition);
         } catch (IndexOutOfBoundsException ignore) {
