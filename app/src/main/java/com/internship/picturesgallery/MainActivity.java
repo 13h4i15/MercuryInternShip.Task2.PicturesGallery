@@ -3,12 +3,8 @@ package com.internship.picturesgallery;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.ParcelFileDescriptor;
-import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -17,18 +13,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileNotFoundException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,7 +31,6 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
     private final static int PERMISSION_REQUEST_CODE = 1;
-    private final static Uri IMAGE_MEDIA_URI = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
     private final static String FULL_IMAGE_VIEW_INTENT_TYPE = "image/*";
     private final static String TAG_DIALOG = "OpenImageDialogFragment";
 
@@ -56,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
         picturesRecyclerAdapter
                 = new PicturesRecyclerAdapter();
+
         final RecyclerView.LayoutManager layoutManager
                 = new GridLayoutManager(this, getResources().getInteger(R.integer.span_count), GridLayoutManager.HORIZONTAL, false);
 
@@ -110,7 +101,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private List<File> getAllShownImagesPath() {
-        //final String filePath = "/storage/emulated/0/DCIM/Camera";
         final String filePath = "/storage/emulated/0/VK/Downloads";
         File[] fileArray = new File(filePath).listFiles();
         final List<File> imagesPathList = new ArrayList<>();
