@@ -9,16 +9,16 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 final class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecyclerAdapter.RecyclerViewHolder> {
-    private final List<String> pathList;
+    private final List<String> pathList = new ArrayList<>();
     private final int screenHeight, spanCount;
     private View.OnClickListener onClickListener;
     private View.OnLongClickListener onLongClickListener;
 
-    public PicturesRecyclerAdapter(List<String> pathList, int screenHeight, int spanCount) {
-        this.pathList = pathList;
+    public PicturesRecyclerAdapter(int screenHeight, int spanCount) {
         this.screenHeight = screenHeight;
         this.spanCount = spanCount;
     }
@@ -55,6 +55,12 @@ final class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecycle
 
     public List<String> getPathList() {
         return pathList;
+    }
+
+    public void setPathList(List<String> pathList){
+        this.pathList.clear();
+        this.pathList.addAll(pathList);
+        notifyDataSetChanged();
     }
 
     public final static class RecyclerViewHolder extends RecyclerView.ViewHolder {
