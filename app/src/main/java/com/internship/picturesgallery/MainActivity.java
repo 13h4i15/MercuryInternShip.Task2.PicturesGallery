@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private List<File> getAllShownImagesPath() {
-        String filePath = "/storage/emulated/0/VK/Downloads";
+        String filePath = "/storage/emulated/0/DCIM/Camera";
         File[] fileArray = new File(filePath).listFiles();
         final List<File> imagesPathList = new ArrayList<>();
         Pattern pattern = Pattern.compile("\\.jpg|\\.png|\\.gif");
