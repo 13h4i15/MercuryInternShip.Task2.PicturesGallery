@@ -14,14 +14,8 @@ import java.util.List;
 
 final class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecyclerAdapter.RecyclerViewHolder> {
     private final List<String> pathList = new ArrayList<>();
-    private final int screenHeight, spanCount;
     private View.OnClickListener onClickListener;
     private View.OnLongClickListener onLongClickListener;
-
-    public PicturesRecyclerAdapter(int screenHeight, int spanCount) {
-        this.screenHeight = screenHeight;
-        this.spanCount = spanCount;
-    }
 
     @NonNull
     @Override
@@ -35,9 +29,7 @@ final class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecycle
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewHolder holder, int position) {
-        final int size = screenHeight / spanCount - ((8 + (spanCount != MainActivity.SPAN_PORTRAIT_QUANTITY ? 6 : 0)) *
-                (int) holder.image.getResources().getDimension(R.dimen.picture_item_margin));
-        MainActivity.picassoImageLoader(new File(pathList.get(position)), holder.image, size);
+        MainActivity.picassoImageLoader(new File(pathList.get(position)), holder.image);
     }
 
     @Override
@@ -57,7 +49,7 @@ final class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecycle
         return pathList;
     }
 
-    public void setPathList(List<String> pathList){
+    public void setPathList(List<String> pathList) {
         this.pathList.clear();
         this.pathList.addAll(pathList);
         notifyDataSetChanged();

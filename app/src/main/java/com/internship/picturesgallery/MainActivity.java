@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         final RecyclerView recyclerView = findViewById(R.id.pictures_recycler);
 
         picturesRecyclerAdapter
-                = new PicturesRecyclerAdapter(getScreenHeight(), getSpanCount());
+                = new PicturesRecyclerAdapter();
         final RecyclerView.LayoutManager layoutManager
                 = new GridLayoutManager(this, getSpanCount(), GridLayoutManager.HORIZONTAL, false);
 
@@ -83,11 +83,11 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    public static void picassoImageLoader(File sourceFile, ImageView imageView, int size) {
+    public static void picassoImageLoader(File sourceFile, ImageView imageView) {
         Picasso.get()
                 .load(sourceFile)
                 .placeholder(R.drawable.ic_placeholder)
-                .resize(size, size)
+                .fit()
                 .centerCrop()
                 .into(imageView);
     }
@@ -102,12 +102,6 @@ public class MainActivity extends AppCompatActivity {
     private boolean isPermissionGranted() {
         return ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private int getScreenHeight() {
-        final Point point = new Point();
-        getWindowManager().getDefaultDisplay().getSize(point);
-        return point.y;
     }
 
     private int getSpanCount() {
