@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         picturesRecyclerAdapter
                 = new PicturesRecyclerAdapter();
 
-        final RecyclerView.LayoutManager layoutManager
+        RecyclerView.LayoutManager layoutManager
                 = new GridLayoutManager(this, getResources().getInteger(R.integer.span_count), GridLayoutManager.HORIZONTAL, false);
 
         if (savedInstanceState == null && checkForPermissions()) getFolderPath();
@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
 
     private List<File> getAllShownImagesPath(String filePath) {
         File[] fileArray = new File(filePath).listFiles();
-        final List<File> imagesPathList = new ArrayList<>();
+        List<File> imagesPathList = new ArrayList<>();
         Pattern pattern = Pattern.compile("\\.jpg|\\.png|\\.gif");
         for (File i : fileArray) {
             Matcher matcher = pattern.matcher(i.toString());
@@ -176,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getFolderPath() {
-        final Intent getFolderIntent = new Intent();
+        Intent getFolderIntent = new Intent();
         getFolderIntent.setAction(Intent.ACTION_OPEN_DOCUMENT_TREE);
         getFolderIntent.addCategory(Intent.CATEGORY_DEFAULT);
         startActivityForResult(Intent.createChooser(getFolderIntent, getString(R.string.choose_folder_title)), FOLDER_REQUEST_CODE);
@@ -184,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
 
     private View.OnClickListener getOnClickImageListener() {
         return view -> {
-            final Intent imageViewIntent = new Intent();
+            Intent imageViewIntent = new Intent();
             imageViewIntent.setAction(Intent.ACTION_VIEW);
             imageViewIntent.setDataAndType(Uri.parse(picturesRecyclerAdapter.getLastClickedImagePath().getPath()), FULL_IMAGE_VIEW_INTENT_TYPE);
             startActivity(imageViewIntent);
@@ -193,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
 
     private View.OnLongClickListener getOnLongClickImageListener() {
         return view -> {
-            final FullImageViewFragment fullImageViewFragment = FullImageViewFragment.newInstance(picturesRecyclerAdapter.getLastClickedImagePath().getPath());
+            FullImageViewFragment fullImageViewFragment = FullImageViewFragment.newInstance(picturesRecyclerAdapter.getLastClickedImagePath().getPath());
             fullImageViewFragment.show(getSupportFragmentManager(), TAG_DIALOG);
             return true;
         };

@@ -35,7 +35,7 @@ public class FullImageViewFragment extends AppCompatDialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.fragment_full_image_view, null);
 
-        final File picturePathFile;
+        File picturePathFile;
         if (getArguments() != null && getArguments().getString(IMAGE_PATH_PARAMETER) != null) {
             picturePathFile = new File(getArguments().getString(IMAGE_PATH_PARAMETER));
         } else {

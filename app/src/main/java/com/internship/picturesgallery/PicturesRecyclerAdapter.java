@@ -21,8 +21,8 @@ final class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecycle
     @NonNull
     @Override
     public RecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.picture_item, parent, false);
-        final RecyclerViewHolder recyclerViewHolder = new RecyclerViewHolder(view);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.picture_item, parent, false);
+        RecyclerViewHolder recyclerViewHolder = new RecyclerViewHolder(view);
         view.setOnClickListener(v -> {
             lastClickedImagePosition = recyclerViewHolder.getAdapterPosition();
             onClickListener.onClick(v);
