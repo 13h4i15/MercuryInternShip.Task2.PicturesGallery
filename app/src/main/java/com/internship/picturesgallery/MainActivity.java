@@ -157,7 +157,6 @@ public class MainActivity extends AppCompatActivity {
         Uri uri = Uri.parse(Environment.getExternalStorageDirectory().getPath());
         getFolderIntent.setAction(Intent.ACTION_OPEN_DOCUMENT_TREE);
         getFolderIntent.addCategory(Intent.CATEGORY_DEFAULT);
-        getFolderIntent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, uri);
         startActivityForResult(Intent.createChooser(getFolderIntent, getString(R.string.choose_folder_title)), FOLDER_REQUEST_CODE);
     }
 
