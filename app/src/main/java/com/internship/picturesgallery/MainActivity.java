@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -36,43 +37,36 @@ public class MainActivity extends AppCompatActivity {
     private final static int PERMISSION_REQUEST_CODE = 1;
     private final static int FOLDER_REQUEST_CODE = 2;
     private final static String FULL_IMAGE_VIEW_INTENT_TYPE = "image/*";
-    private final static String SCROLL_TO_EXTRA = "position";
+    private final static String RECYCLER_STATE_EXTRA = "recyclerState";
     private final static String FOLDER_PATH_EXTRA = "folder";
     private final static String TAG_DIALOG = "OpenImageDialogFragment";
     private final static String LOADING_ERROR_TAG = "OpenImageDialogFragment";
 
     private Disposable pathLoadingDisposable;
     private PicturesRecyclerAdapter picturesRecyclerAdapter;
-    private RecyclerView.LayoutManager layoutManager;
+    private RecyclerView recyclerView;
     private String folderPath;
-    private int firstVisiblePosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final RecyclerView recyclerView = findViewById(R.id.pictures_recycler);
+        recyclerView = findViewById(R.id.pictures_recycler);
 
         picturesRecyclerAdapter
                 = new PicturesRecyclerAdapter();
 
-        layoutManager
+        final RecyclerView.LayoutManager layoutManager
                 = new GridLayoutManager(this, getResources().getInteger(R.integer.span_count), GridLayoutManager.HORIZONTAL, false);
 
-        firstVisiblePosition = 0;
-        if (savedInstanceState != null) {
-            folderPath = savedInstanceState.getString(FOLDER_PATH_EXTRA);
-            firstVisiblePosition = savedInstanceState.getInt(SCROLL_TO_EXTRA);
-            loadImagesPathWithRxInAdapter(folderPath, firstVisiblePosition);
-        } else if (checkForPermissions()) getFolderPath();
+        if (savedInstanceState == null && checkForPermissions()) getFolderPath();
 
         picturesRecyclerAdapter.setOnClickListener(getOnClickImageListener());
         picturesRecyclerAdapter.setOnLongClickListener(getOnLongClickImageListener());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new PictureItemDecorator());
         recyclerView.setAdapter(picturesRecyclerAdapter);
-
     }
 
     @Override
@@ -98,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
                     String[] fileSplit = path.split(":");
                     path = Environment.getExternalStorageDirectory().getPath() + File.separator + fileSplit[fileSplit.length - 1];
                     folderPath = path;
-                    loadImagesPathWithRxInAdapter(folderPath, firstVisiblePosition);
+                    loadImagesPathWithRxInAdapter(folderPath, null);
                 }
                 break;
         }
@@ -107,8 +101,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putParcelable(RECYCLER_STATE_EXTRA, recyclerView.getLayoutManager().onSaveInstanceState());
         outState.putString(FOLDER_PATH_EXTRA, folderPath);
-        outState.putInt(SCROLL_TO_EXTRA, picturesRecyclerAdapter.getLastVisiblePosition() - getResources().getInteger(R.integer.scroll_to_start_number));
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        folderPath = savedInstanceState.getString(FOLDER_PATH_EXTRA);
+        Parcelable recyclerState = savedInstanceState.getParcelable(RECYCLER_STATE_EXTRA);
+        loadImagesPathWithRxInAdapter(folderPath, recyclerState);
+        super.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override
@@ -155,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
         return imagesPathList;
     }
 
-    private void loadImagesPathWithRxInAdapter(String path, int firstVisiblePosition) {
+    private void loadImagesPathWithRxInAdapter(String path, Parcelable recyclerState) {
         if (pathLoadingDisposable != null && !pathLoadingDisposable.isDisposed())
             pathLoadingDisposable.dispose();
         pathLoadingDisposable = Single.fromCallable(() -> getAllShownImagesPath(path))
@@ -164,7 +166,9 @@ public class MainActivity extends AppCompatActivity {
                 .subscribe(loadedPathList -> {
                     try {
                         picturesRecyclerAdapter.setPathList(loadedPathList);
-                        layoutManager.scrollToPosition(firstVisiblePosition);
+                        if (recyclerState != null) {
+                            recyclerView.getLayoutManager().onRestoreInstanceState(recyclerState);
+                        }
                     } catch (Exception exception) {
                         Log.e(LOADING_ERROR_TAG, exception.toString());
                     }
