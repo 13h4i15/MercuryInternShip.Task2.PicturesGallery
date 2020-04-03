@@ -6,7 +6,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.DocumentsContract;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -37,11 +36,16 @@ public class MainActivity extends AppCompatActivity {
     private final static int PERMISSION_REQUEST_CODE = 1;
     private final static int FOLDER_REQUEST_CODE = 2;
     private final static String FULL_IMAGE_VIEW_INTENT_TYPE = "image/*";
+    private final static String SCROLL_TO_EXTRA = "position";
+    private final static String FOLDER_PATH_EXTRA = "folder";
     private final static String TAG_DIALOG = "OpenImageDialogFragment";
-    private final static String NULL_POINTER_EXCEPTION_TAG = "OpenImageDialogFragment";
+    private final static String LOADING_ERROR_TAG = "OpenImageDialogFragment";
 
     private Disposable pathLoadingDisposable;
     private PicturesRecyclerAdapter picturesRecyclerAdapter;
+    private RecyclerView.LayoutManager layoutManager;
+    private String folderPath;
+    private int firstVisiblePosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,16 +57,22 @@ public class MainActivity extends AppCompatActivity {
         picturesRecyclerAdapter
                 = new PicturesRecyclerAdapter();
 
-        final RecyclerView.LayoutManager layoutManager
+        layoutManager
                 = new GridLayoutManager(this, getResources().getInteger(R.integer.span_count), GridLayoutManager.HORIZONTAL, false);
 
-        if (checkForPermissions()) getFolderPath();
+        firstVisiblePosition = 0;
+        if (savedInstanceState != null) {
+            folderPath = savedInstanceState.getString(FOLDER_PATH_EXTRA);
+            firstVisiblePosition = savedInstanceState.getInt(SCROLL_TO_EXTRA);
+            loadImagesPathWithRxInAdapter(folderPath, firstVisiblePosition);
+        } else if (checkForPermissions()) getFolderPath();
 
         picturesRecyclerAdapter.setOnClickListener(getOnClickImageListener());
         picturesRecyclerAdapter.setOnLongClickListener(getOnLongClickImageListener());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new PictureItemDecorator());
         recyclerView.setAdapter(picturesRecyclerAdapter);
+
     }
 
     @Override
@@ -87,10 +97,18 @@ public class MainActivity extends AppCompatActivity {
                     String path = data.getData().getPath();
                     String[] fileSplit = path.split(":");
                     path = Environment.getExternalStorageDirectory().getPath() + File.separator + fileSplit[fileSplit.length - 1];
-                    loadImagesPathWithRxInAdapter(path);
+                    folderPath = path;
+                    loadImagesPathWithRxInAdapter(folderPath, firstVisiblePosition);
                 }
                 break;
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(FOLDER_PATH_EXTRA, folderPath);
+        outState.putInt(SCROLL_TO_EXTRA, picturesRecyclerAdapter.getLastVisiblePosition() - getResources().getInteger(R.integer.scroll_to_start_number));
     }
 
     @Override
@@ -137,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
         return imagesPathList;
     }
 
-    private void loadImagesPathWithRxInAdapter(String path) {
+    private void loadImagesPathWithRxInAdapter(String path, int firstVisiblePosition) {
         if (pathLoadingDisposable != null && !pathLoadingDisposable.isDisposed())
             pathLoadingDisposable.dispose();
         pathLoadingDisposable = Single.fromCallable(() -> getAllShownImagesPath(path))
@@ -146,15 +164,15 @@ public class MainActivity extends AppCompatActivity {
                 .subscribe(loadedPathList -> {
                     try {
                         picturesRecyclerAdapter.setPathList(loadedPathList);
-                    } catch (NullPointerException exception) {
-                        Log.e(NULL_POINTER_EXCEPTION_TAG, exception.toString());
+                        layoutManager.scrollToPosition(firstVisiblePosition);
+                    } catch (Exception exception) {
+                        Log.e(LOADING_ERROR_TAG, exception.toString());
                     }
-                }, exception -> Log.e(NULL_POINTER_EXCEPTION_TAG, exception.toString()));
+                }, exception -> Log.e(LOADING_ERROR_TAG, exception.toString()));
     }
 
     private void getFolderPath() {
         final Intent getFolderIntent = new Intent();
-        Uri uri = Uri.parse(Environment.getExternalStorageDirectory().getPath());
         getFolderIntent.setAction(Intent.ACTION_OPEN_DOCUMENT_TREE);
         getFolderIntent.addCategory(Intent.CATEGORY_DEFAULT);
         startActivityForResult(Intent.createChooser(getFolderIntent, getString(R.string.choose_folder_title)), FOLDER_REQUEST_CODE);

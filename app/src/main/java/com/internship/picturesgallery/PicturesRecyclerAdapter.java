@@ -16,7 +16,7 @@ final class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecycle
     private final List<File> pathList = new ArrayList<>();
     private View.OnClickListener onClickListener;
     private View.OnLongClickListener onLongClickListener;
-    private int lastClickedImagePosition;
+    private int lastClickedImagePosition, lastVisiblePosition;
 
     @NonNull
     @Override
@@ -36,6 +36,9 @@ final class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecycle
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewHolder holder, int position) {
+        lastVisiblePosition = position > lastVisiblePosition ? position
+                : position + holder.image.getContext().getResources().getInteger(R.integer.scroll_to_start_number) +
+                holder.image.getContext().getResources().getInteger(R.integer.span_count);
         MainActivity.picassoImageLoader(pathList.get(position), holder.image);
     }
 
@@ -64,6 +67,10 @@ final class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecycle
         } catch (IndexOutOfBoundsException ignore) {
             return null;
         }
+    }
+
+    public int getLastVisiblePosition() {
+        return lastVisiblePosition;
     }
 
     public final static class RecyclerViewHolder extends RecyclerView.ViewHolder {
