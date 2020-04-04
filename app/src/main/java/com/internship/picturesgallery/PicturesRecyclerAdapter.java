@@ -3,7 +3,6 @@ package com.internship.picturesgallery;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,23 +15,20 @@ import java.util.List;
 
 final class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecyclerAdapter.RecyclerViewHolder> {
     private final List<File> pathList = new ArrayList<>();
-    private View.OnClickListener onClickListener;
-    private View.OnLongClickListener onLongClickListener;
-    private int lastClickedImagePosition;
+    private OnImageClickListener onClickListener, onLongClickListener;
 
     @NonNull
     @Override
     public RecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.picture_item, parent, false);
         RecyclerViewHolder recyclerViewHolder = new RecyclerViewHolder(view);
-        view.setOnClickListener(v -> {
-            lastClickedImagePosition = recyclerViewHolder.getAdapterPosition();
-            onClickListener.onClick(v);
-        });
+
+        view.setOnClickListener(v -> onClickListener.onClick(v, pathList.get(recyclerViewHolder.getLayoutPosition())));
         view.setOnLongClickListener(v -> {
-            lastClickedImagePosition = recyclerViewHolder.getAdapterPosition();
-            return onLongClickListener.onLongClick(v);
+            onLongClickListener.onClick(v, pathList.get(recyclerViewHolder.getLayoutPosition()));
+            return true;
         });
+
         return recyclerViewHolder;
     }
 
@@ -46,11 +42,11 @@ final class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecycle
         return pathList.size();
     }
 
-    public void setOnClickListener(View.OnClickListener onClickListener) {
+    public void setOnClickListener(OnImageClickListener onClickListener) {
         this.onClickListener = onClickListener;
     }
 
-    public void setOnLongClickListener(View.OnLongClickListener onLongClickListener) {
+    public void setOnLongClickListener(OnImageClickListener onLongClickListener) {
         this.onLongClickListener = onLongClickListener;
     }
 
@@ -60,25 +56,17 @@ final class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecycle
         notifyDataSetChanged();
     }
 
-    public File getLastClickedImagePath() {
-        try {
-            return pathList.get(lastClickedImagePosition);
-        } catch (IndexOutOfBoundsException ignore) {
-            return null;
-        }
-    }
-
-    private static void picassoImageLoader(File sourceFile, ImageView imageView) {
+    private static void picassoImageLoader(File sourceFile, SquareImageView squareImageView) {
         Picasso.get()
                 .load(sourceFile)
                 .placeholder(R.drawable.ic_placeholder)
                 .fit()
                 .centerCrop()
-                .into(imageView);
+                .into(squareImageView);
     }
 
     public final static class RecyclerViewHolder extends RecyclerView.ViewHolder {
-        private final ImageView image;
+        private final SquareImageView image;
 
         public RecyclerViewHolder(@NonNull View itemView) {
             super(itemView);

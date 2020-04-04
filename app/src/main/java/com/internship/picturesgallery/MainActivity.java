@@ -8,8 +8,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Parcelable;
 import android.util.Log;
-import android.view.View;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,8 +17,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -178,20 +174,19 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(Intent.createChooser(getFolderIntent, getString(R.string.choose_folder_title)), FOLDER_REQUEST_CODE);
     }
 
-    private View.OnClickListener getOnClickImageListener() {
-        return view -> {
+    private OnImageClickListener getOnClickImageListener() {
+        return (view, sourceFile) -> {
             Intent imageViewIntent = new Intent();
             imageViewIntent.setAction(Intent.ACTION_VIEW);
-            imageViewIntent.setDataAndType(Uri.parse(picturesRecyclerAdapter.getLastClickedImagePath().getPath()), FULL_IMAGE_VIEW_INTENT_TYPE);
+            imageViewIntent.setDataAndType(Uri.parse(sourceFile.getPath()), FULL_IMAGE_VIEW_INTENT_TYPE);
             startActivity(imageViewIntent);
         };
     }
 
-    private View.OnLongClickListener getOnLongClickImageListener() {
-        return view -> {
-            FullImageViewFragment fullImageViewFragment = FullImageViewFragment.newInstance(picturesRecyclerAdapter.getLastClickedImagePath().getPath());
+    private OnImageClickListener getOnLongClickImageListener() {
+        return (view, sourceFile) -> {
+            FullImageViewFragment fullImageViewFragment = FullImageViewFragment.newInstance(sourceFile.getPath());
             fullImageViewFragment.show(getSupportFragmentManager(), TAG_DIALOG);
-            return true;
         };
     }
 }
