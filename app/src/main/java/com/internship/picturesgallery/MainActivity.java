@@ -54,8 +54,7 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.pictures_recycler);
 
-        picturesRecyclerAdapter
-                = new PicturesRecyclerAdapter();
+        picturesRecyclerAdapter = new PicturesRecyclerAdapter();
 
         RecyclerView.LayoutManager layoutManager
                 = new GridLayoutManager(this, getResources().getInteger(R.integer.span_count), GridLayoutManager.HORIZONTAL, false);
@@ -73,11 +72,13 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (requestCode == PERMISSION_REQUEST_CODE && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            getFolderPath();
-        } else {
-            Toast.makeText(this, getString(R.string.permissions_lack_toast), Toast.LENGTH_SHORT).show();
-            finish();
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getFolderPath();
+            } else {
+                Toast.makeText(this, getString(R.string.permissions_lack_toast), Toast.LENGTH_SHORT).show();
+                finish();
+            }
         }
     }
 
@@ -150,9 +151,7 @@ public class MainActivity extends AppCompatActivity {
         Pattern pattern = Pattern.compile("\\.jpg|\\.png|\\.gif");
         for (File i : fileArray) {
             Matcher matcher = pattern.matcher(i.toString());
-            if (matcher.find()) {
-                imagesPathList.add(0, i);
-            }
+            if (matcher.find()) imagesPathList.add(0, i);
         }
         return imagesPathList;
     }
@@ -166,9 +165,8 @@ public class MainActivity extends AppCompatActivity {
                 .subscribe(loadedPathList -> {
                     try {
                         picturesRecyclerAdapter.setPathList(loadedPathList);
-                        if (recyclerState != null) {
+                        if (recyclerState != null)
                             recyclerView.getLayoutManager().onRestoreInstanceState(recyclerState);
-                        }
                     } catch (Exception exception) {
                         Log.e(LOADING_ERROR_TAG, exception.toString());
                     }
