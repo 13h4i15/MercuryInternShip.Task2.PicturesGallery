@@ -56,15 +56,16 @@ public class MainActivity extends AppCompatActivity {
 
         picturesRecyclerAdapter = new PicturesRecyclerAdapter();
 
+        int spanCount = getResources().getInteger(R.integer.span_count);
         RecyclerView.LayoutManager layoutManager
-                = new GridLayoutManager(this, getResources().getInteger(R.integer.span_count), GridLayoutManager.HORIZONTAL, false);
+                = new GridLayoutManager(this, spanCount, GridLayoutManager.HORIZONTAL, false);
 
         if (savedInstanceState == null && checkForPermissions()) getFolderPath();
 
         picturesRecyclerAdapter.setOnClickListener(getOnClickImageListener());
         picturesRecyclerAdapter.setOnLongClickListener(getOnLongClickImageListener());
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addItemDecoration(new PictureItemDecorator());
+        recyclerView.addItemDecoration(new PictureItemDecorator(spanCount));
         recyclerView.setAdapter(picturesRecyclerAdapter);
     }
 
