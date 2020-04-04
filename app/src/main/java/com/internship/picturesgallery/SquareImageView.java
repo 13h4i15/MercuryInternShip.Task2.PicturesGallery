@@ -15,10 +15,13 @@ public final class SquareImageView extends AppCompatImageView {
         super(context, attrs);
     }
 
+    public SquareImageView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+    }
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
         setMeasuredDimension(getMeasuredHeight(), getMeasuredHeight());
     }
 }
