@@ -27,7 +27,7 @@ final class PictureItemDecorator extends RecyclerView.ItemDecoration {
 
         if (position % spanCount == 0)
             outRect.top = 0;
-        else if (position % spanCount == 3 || (spanCount == 2 && position % spanCount == 1))
+        else if (position % spanCount == spanCount - 1)
             outRect.bottom = 0;
     }
 }

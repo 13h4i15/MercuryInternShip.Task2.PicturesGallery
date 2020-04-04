@@ -8,6 +8,8 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.squareup.picasso.Picasso;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +38,7 @@ final class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecycle
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewHolder holder, int position) {
-        MainActivity.picassoImageLoader(pathList.get(position), holder.image);
+        picassoImageLoader(pathList.get(position), holder.image);
     }
 
     @Override
@@ -64,6 +66,15 @@ final class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecycle
         } catch (IndexOutOfBoundsException ignore) {
             return null;
         }
+    }
+
+    private static void picassoImageLoader(File sourceFile, ImageView imageView) {
+        Picasso.get()
+                .load(sourceFile)
+                .placeholder(R.drawable.ic_placeholder)
+                .fit()
+                .centerCrop()
+                .into(imageView);
     }
 
     public final static class RecyclerViewHolder extends RecyclerView.ViewHolder {

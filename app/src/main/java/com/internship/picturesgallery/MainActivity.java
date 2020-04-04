@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView.LayoutManager layoutManager
                 = new GridLayoutManager(this, spanCount, GridLayoutManager.HORIZONTAL, false);
 
-        if (savedInstanceState == null && checkForPermissions()) getFolderPath();
+        if (savedInstanceState == null && checkForPermissions()) receiveFolderPath();
 
         picturesRecyclerAdapter.setOnClickListener(getOnClickImageListener());
         picturesRecyclerAdapter.setOnLongClickListener(getOnLongClickImageListener());
@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (requestCode == PERMISSION_REQUEST_CODE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                getFolderPath();
+                receiveFolderPath();
             } else {
                 Toast.makeText(this, getString(R.string.permissions_lack_toast), Toast.LENGTH_SHORT).show();
                 finish();
@@ -122,15 +122,6 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    public static void picassoImageLoader(File sourceFile, ImageView imageView) {
-        Picasso.get()
-                .load(sourceFile)
-                .placeholder(R.drawable.ic_placeholder)
-                .fit()
-                .centerCrop()
-                .into(imageView);
-    }
-
     private boolean checkForPermissions() {
         if (!isPermissionGranted()) {
             ActivityCompat.requestPermissions(MainActivity.this,
@@ -174,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
                 }, exception -> Log.e(LOADING_ERROR_TAG, exception.toString()));
     }
 
-    private void getFolderPath() {
+    private void receiveFolderPath() {
         Intent getFolderIntent = new Intent();
         getFolderIntent.setAction(Intent.ACTION_OPEN_DOCUMENT_TREE);
         getFolderIntent.addCategory(Intent.CATEGORY_DEFAULT);
