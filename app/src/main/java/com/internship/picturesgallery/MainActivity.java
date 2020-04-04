@@ -40,7 +40,8 @@ public class MainActivity extends AppCompatActivity {
     private final static String RECYCLER_STATE_EXTRA = "recyclerState";
     private final static String FOLDER_PATH_EXTRA = "folder";
     private final static String TAG_DIALOG = "OpenImageDialogFragment";
-    private final static String LOADING_ERROR_TAG = "OpenImageDialogFragment";
+    private final static String LOADING_ERROR_TAG = "loadingDataError";
+    private final static String PATH_RECEIVING_ERROR_TAG = "pathReceivingError";
 
     private Disposable pathLoadingDisposable;
     private PicturesRecyclerAdapter picturesRecyclerAdapter;
@@ -90,11 +91,16 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case FOLDER_REQUEST_CODE:
                 if (resultCode == RESULT_OK) {
-                    String path = data.getData().getPath();
-                    String[] fileSplit = path.split(":");
-                    path = Environment.getExternalStorageDirectory().getPath() + File.separator + fileSplit[fileSplit.length - 1];
-                    folderPath = path;
-                    loadImagesPathWithRxInAdapter(folderPath, null);
+                    try {
+                        String path = data.getData().getPath();
+                        String[] fileSplit = path.split(":");
+                        path = Environment.getExternalStorageDirectory().getPath() + File.separator + fileSplit[fileSplit.length - 1];
+                        folderPath = path;
+                        loadImagesPathWithRxInAdapter(folderPath, null);
+                    } catch (NullPointerException nullPointerException) {
+                        Log.e(PATH_RECEIVING_ERROR_TAG, nullPointerException.toString());
+                        Toast.makeText(this, getString(R.string.images_loading_error_toast), Toast.LENGTH_SHORT).show();
+                    }
                 }
                 break;
         }
@@ -137,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
                 == PackageManager.PERMISSION_GRANTED;
     }
 
-    private List<File> getAllShownImagesPath(String filePath) {
+    private List<File> obtainAllShownImagesPath(String filePath) throws NullPointerException {
         File[] fileArray = new File(filePath).listFiles();
         List<File> imagesPathList = new ArrayList<>();
         Pattern pattern = Pattern.compile("\\.jpg|\\.png|\\.gif");
@@ -148,10 +154,10 @@ public class MainActivity extends AppCompatActivity {
         return imagesPathList;
     }
 
-    private void loadImagesPathWithRxInAdapter(String path, Parcelable recyclerState) {
+    private void loadImagesPathWithRxInAdapter(String path, Parcelable recyclerState) throws NullPointerException {
         if (pathLoadingDisposable != null && !pathLoadingDisposable.isDisposed())
             pathLoadingDisposable.dispose();
-        pathLoadingDisposable = Single.fromCallable(() -> getAllShownImagesPath(path))
+        pathLoadingDisposable = Single.fromCallable(() -> obtainAllShownImagesPath(path))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(loadedPathList -> {
