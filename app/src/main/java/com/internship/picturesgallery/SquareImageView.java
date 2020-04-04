@@ -6,7 +6,6 @@ import android.util.AttributeSet;
 import androidx.appcompat.widget.AppCompatImageView;
 
 public final class SquareImageView extends AppCompatImageView {
-
     public SquareImageView(Context context) {
         super(context);
     }

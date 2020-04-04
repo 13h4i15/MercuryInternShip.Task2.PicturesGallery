@@ -179,6 +179,7 @@ public class MainActivity extends AppCompatActivity {
             Intent imageViewIntent = new Intent();
             imageViewIntent.setAction(Intent.ACTION_VIEW);
             imageViewIntent.setDataAndType(Uri.parse(sourceFile.getPath()), FULL_IMAGE_VIEW_INTENT_TYPE);
+            imageViewIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             startActivity(imageViewIntent);
         };
     }

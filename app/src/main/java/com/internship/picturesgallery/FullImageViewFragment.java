@@ -52,7 +52,7 @@ public class FullImageViewFragment extends AppCompatDialogFragment {
             newLayoutWidth = 0;
             newLayoutHeight = displayMetrics.heightPixels * 4 / 5;
         } else {
-            newLayoutWidth = displayMetrics.widthPixels * 7 / 8;
+            newLayoutWidth = displayMetrics.widthPixels * 6 / 7;
             newLayoutHeight = 0;
         }
         ImageView imageView = view.findViewById(R.id.fragment_picture_element);
