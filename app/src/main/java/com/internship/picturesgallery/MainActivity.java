@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private final static int PERMISSION_REQUEST_CODE = 1;
     private final static int FOLDER_REQUEST_CODE = 2;
     private final static String FULL_IMAGE_VIEW_INTENT_TYPE = "image/*";
+    private final static String EXTERNAL_STORAGE_DOCUMENT_PATH = "com.android.externalstorage.documents";
     private final static String RECYCLER_STATE_EXTRA = "recyclerState";
     private final static String FOLDER_PATH_EXTRA = "folder";
     private final static String TAG_DIALOG = "OpenImageDialogFragment";
@@ -127,6 +128,10 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+    private static boolean isExternalStorageDocument(Uri uri) {
+        return EXTERNAL_STORAGE_DOCUMENT_PATH.equals(uri.getAuthority());
+    }
+
     private boolean checkForPermissions() {
         if (!isPermissionGranted()) {
             ActivityCompat.requestPermissions(MainActivity.this,
@@ -158,10 +163,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return null;
-    }
-
-    public static boolean isExternalStorageDocument(Uri uri) {
-        return "com.android.externalstorage.documents".equals(uri.getAuthority());
     }
 
     private List<File> obtainAllShownImagesPath(String filePath) throws NullPointerException {
