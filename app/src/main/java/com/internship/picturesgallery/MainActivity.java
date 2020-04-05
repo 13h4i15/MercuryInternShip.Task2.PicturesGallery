@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Parcelable;
+import android.provider.DocumentsContract;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -59,8 +60,8 @@ public class MainActivity extends AppCompatActivity {
 
         if (savedInstanceState == null && checkForPermissions()) receiveFolderPath();
 
-        picturesRecyclerAdapter.setOnClickListener(getOnClickImageListener());
-        picturesRecyclerAdapter.setOnLongClickListener(getOnLongClickImageListener());
+        picturesRecyclerAdapter.setOnClickListener(receiveOnClickImageListener());
+        picturesRecyclerAdapter.setOnLongClickListener(receiveOnLongClickImageListener());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new PictureItemDecorator(spanCount));
         recyclerView.setAdapter(picturesRecyclerAdapter);
@@ -88,15 +89,17 @@ public class MainActivity extends AppCompatActivity {
             case FOLDER_REQUEST_CODE:
                 if (resultCode == RESULT_OK) {
                     try {
-                        String path = data.getData().getPath();
-                        String[] fileSplit = path.split(":");
-                        path = Environment.getExternalStorageDirectory().getPath() + File.separator + fileSplit[fileSplit.length - 1];
-                        folderPath = path;
+                        Uri docUrt = DocumentsContract.buildDocumentUriUsingTree(
+                                data.getData(), DocumentsContract.getTreeDocumentId(data.getData()));
+                        folderPath = getFullPathFromDocumentUri(docUrt);
                         loadImagesPathWithRxInAdapter(folderPath, null);
                     } catch (NullPointerException nullPointerException) {
                         Log.e(PATH_RECEIVING_ERROR_TAG, nullPointerException.toString());
                         Toast.makeText(this, getString(R.string.images_loading_error_toast), Toast.LENGTH_SHORT).show();
+                        receiveFolderPath();
                     }
+                } else {
+                    finish();
                 }
                 break;
         }
@@ -139,6 +142,28 @@ public class MainActivity extends AppCompatActivity {
                 == PackageManager.PERMISSION_GRANTED;
     }
 
+    private String getFullPathFromDocumentUri(Uri uri) {
+        String documentId = DocumentsContract.getDocumentId(uri);
+        if (isExternalStorageDocument(uri)) {
+            String[] splitDocumentId = documentId.split(File.pathSeparator);
+            String documentType = splitDocumentId[0];
+            if ("primary".equalsIgnoreCase(documentType)) {
+                // You can pick only from device memory
+                // Other cases are downloads folder or media documents
+                try {
+                    return Environment.getExternalStorageDirectory() + File.separator + splitDocumentId[1];
+                } catch (IndexOutOfBoundsException ignore) {
+                    return Environment.getExternalStorageDirectory() + File.separator;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static boolean isExternalStorageDocument(Uri uri) {
+        return "com.android.externalstorage.documents".equals(uri.getAuthority());
+    }
+
     private List<File> obtainAllShownImagesPath(String filePath) throws NullPointerException {
         File[] fileArray = new File(filePath).listFiles();
         List<File> imagesPathList = new ArrayList<>();
@@ -168,13 +193,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void receiveFolderPath() {
-        Intent getFolderIntent = new Intent();
-        getFolderIntent.setAction(Intent.ACTION_OPEN_DOCUMENT_TREE);
-        getFolderIntent.addCategory(Intent.CATEGORY_DEFAULT);
-        startActivityForResult(Intent.createChooser(getFolderIntent, getString(R.string.choose_folder_title)), FOLDER_REQUEST_CODE);
+        Intent receiveFolderIntent = new Intent();
+        receiveFolderIntent.setAction(Intent.ACTION_OPEN_DOCUMENT_TREE);
+        receiveFolderIntent.addCategory(Intent.CATEGORY_DEFAULT);
+        startActivityForResult(Intent.createChooser(receiveFolderIntent, getString(R.string.choose_folder_title)), FOLDER_REQUEST_CODE);
     }
 
-    private OnImageClickListener getOnClickImageListener() {
+    private OnImageClickListener receiveOnClickImageListener() {
         return (view, sourceFile) -> {
             Intent imageViewIntent = new Intent();
             imageViewIntent.setAction(Intent.ACTION_VIEW);
@@ -184,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
-    private OnImageClickListener getOnLongClickImageListener() {
+    private OnImageClickListener receiveOnLongClickImageListener() {
         return (view, sourceFile) -> {
             FullImageViewFragment fullImageViewFragment = FullImageViewFragment.newInstance(sourceFile.getPath());
             fullImageViewFragment.show(getSupportFragmentManager(), TAG_DIALOG);
