@@ -75,7 +75,7 @@ public class FullImageViewFragment extends AppCompatDialogFragment {
                     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                         try {
                             getDialog().getWindow().setLayout(bitmap.getWidth(), bitmap.getHeight());
-                        }finally {
+                        } finally {
                             imageView.setLayoutParams(new LinearLayout.LayoutParams(bitmap.getWidth(), bitmap.getHeight()));
                             imageView.requestLayout();
                             imageView.setImageBitmap(bitmap);
