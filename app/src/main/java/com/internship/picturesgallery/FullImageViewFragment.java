@@ -1,7 +1,8 @@
 package com.internship.picturesgallery;
 
 import android.app.Dialog;
-import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -9,17 +10,22 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.io.File;
 
 public class FullImageViewFragment extends AppCompatDialogFragment {
     private static final String IMAGE_PATH_PARAMETER = "path";
+    private File picturePathFile;
+    private ImageView imageView;
 
     public static FullImageViewFragment newInstance(String picturePathParameter) {
         FullImageViewFragment fragment = new FullImageViewFragment();
@@ -37,28 +43,26 @@ public class FullImageViewFragment extends AppCompatDialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.fragment_full_image_view, null);
 
-        File picturePathFile;
         if (getArguments() != null && getArguments().getString(IMAGE_PATH_PARAMETER) != null) {
             picturePathFile = new File(getArguments().getString(IMAGE_PATH_PARAMETER));
         } else {
-            picturePathFile = null;
             Toast.makeText(getContext(), getString(R.string.image_loading_error), Toast.LENGTH_SHORT).show();
+            dismiss();
         }
 
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int newLayoutWidth, newLayoutHeight;
-        if (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            newLayoutWidth = 0;
-            newLayoutHeight = displayMetrics.heightPixels * 4 / 5;
-        } else {
-            newLayoutWidth = displayMetrics.widthPixels * 6 / 7;
-            newLayoutHeight = 0;
-        }
-        ImageView imageView = view.findViewById(R.id.fragment_picture_element);
-        picassoImageLoader(picturePathFile, imageView, newLayoutWidth, newLayoutHeight);
+        imageView = view.findViewById(R.id.fragment_picture_element);
         imageView.setOnClickListener(v -> dismiss());
         return builder.setView(view).create();
+    }
+
+    @Override
+    public void onStart() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int newLayoutHeight = displayMetrics.heightPixels * getResources().getInteger(R.integer.fragment_scale_height) / 100;
+        int newLayoutWidth = displayMetrics.widthPixels * getResources().getInteger(R.integer.fragment_scale_width) / 100;
+        picassoImageLoader(picturePathFile, imageView, newLayoutWidth, newLayoutHeight);
+        super.onStart();
     }
 
     private void picassoImageLoader(File sourceFile, ImageView imageView, int layoutWidth, int layoutHeight) {
@@ -66,6 +70,26 @@ public class FullImageViewFragment extends AppCompatDialogFragment {
                 .load(sourceFile)
                 .placeholder(R.drawable.ic_placeholder)
                 .resize(layoutWidth, layoutHeight)
-                .into(imageView);
+                .into(new Target() {
+                    @Override
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                        getDialog().getWindow().setLayout(bitmap.getWidth(), bitmap.getHeight());
+                        imageView.setLayoutParams(new LinearLayout.LayoutParams(bitmap.getWidth(), bitmap.getHeight()));
+                        imageView.requestLayout();
+                        imageView.setImageBitmap(bitmap);
+                    }
+
+                    @Override
+                    public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+                        imageView.setImageDrawable(errorDrawable);
+                        Log.e(Constants.LOADING_ERROR_TAG, e.toString());
+                        dismiss();
+                    }
+
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+                        imageView.setImageDrawable(placeHolderDrawable);
+                    }
+                });
     }
 }

@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <integer name="span_count">4</integer>
+    <integer name="fragment_scale_width">85</integer>
+    <integer name="fragment_scale_height">0</integer>
 </resources>

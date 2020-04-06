@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
     private final static String RECYCLER_STATE_EXTRA = "recyclerState";
     private final static String FOLDER_PATH_EXTRA = "folder";
     private final static String TAG_DIALOG = "OpenImageDialogFragment";
-    private final static String LOADING_ERROR_TAG = "loadingDataError";
     private final static String PATH_RECEIVING_ERROR_TAG = "pathReceivingError";
 
     private Disposable pathLoadingDisposable;
@@ -188,9 +187,9 @@ public class MainActivity extends AppCompatActivity {
                         if (recyclerState != null)
                             recyclerView.getLayoutManager().onRestoreInstanceState(recyclerState);
                     } catch (Exception exception) {
-                        Log.e(LOADING_ERROR_TAG, exception.toString());
+                        Log.e(Constants.LOADING_ERROR_TAG, exception.toString());
                     }
-                }, exception -> Log.e(LOADING_ERROR_TAG, exception.toString()));
+                }, exception -> Log.e(Constants.LOADING_ERROR_TAG, exception.toString()));
     }
 
     private void receiveFolderPath() {
