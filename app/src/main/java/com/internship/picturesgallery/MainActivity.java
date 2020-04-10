@@ -34,13 +34,11 @@ public class MainActivity extends AppCompatActivity {
     private final static int PERMISSION_REQUEST_CODE = 1;
     private final static String FULL_IMAGE_VIEW_INTENT_TYPE = "image/*";
     private final static String RECYCLER_STATE_EXTRA = "recyclerState";
-    private final static String FOLDER_PATH_EXTRA = "folder";
     private final static String TAG_DIALOG = "OpenImageDialogFragment";
 
     private Disposable pathLoadingDisposable;
     private PicturesRecyclerAdapter picturesRecyclerAdapter;
     private RecyclerView recyclerView;
-    private String folderPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,12 +85,10 @@ public class MainActivity extends AppCompatActivity {
         if (recyclerView.getLayoutManager() != null) {
             outState.putParcelable(RECYCLER_STATE_EXTRA, recyclerView.getLayoutManager().onSaveInstanceState());
         }
-        outState.putString(FOLDER_PATH_EXTRA, folderPath);
     }
 
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-        folderPath = savedInstanceState.getString(FOLDER_PATH_EXTRA);
         Parcelable recyclerState = savedInstanceState.getParcelable(RECYCLER_STATE_EXTRA);
         loadImagesPathWithRxInAdapter(recyclerState);
         super.onRestoreInstanceState(savedInstanceState);

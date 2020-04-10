@@ -19,9 +19,7 @@ final class PictureItemDecorator extends RecyclerView.ItemDecoration {
         int dimen = view.getResources().getDimensionPixelSize(R.dimen.picture_item_margin);
 
         outRect.set(dimen, 0, 0, dimen);
-
         if (position < spanCount) outRect.left = 0;
-
         if (position % spanCount == spanCount - 1) outRect.bottom = 0;
     }
 }

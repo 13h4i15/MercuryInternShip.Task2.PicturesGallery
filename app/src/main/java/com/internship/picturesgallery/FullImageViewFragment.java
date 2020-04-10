@@ -9,7 +9,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -57,7 +56,7 @@ public class FullImageViewFragment extends AppCompatDialogFragment {
 
     @Override
     public void onStart() {
-        if (getDialog() == null || getDialog().getWindow() == null || getDialog().getWindow().getWindowManager() == null) {
+        if (getDialog() == null || getDialog().getWindow() == null) {
             Toast.makeText(getContext(), R.string.dialog_loading_error, Toast.LENGTH_SHORT).show();
             dismiss();
         }
