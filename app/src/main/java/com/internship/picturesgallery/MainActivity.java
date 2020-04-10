@@ -122,10 +122,10 @@ public class MainActivity extends AppCompatActivity {
         File[] fileArray = new File(filePath).listFiles();
         if (fileArray == null) return null;
         List<File> imagesPathList = new ArrayList<>();
-        for (File i : fileArray) {
-            if (i == null) continue;
-            Matcher matcher = pattern.matcher(i.toString());
-            if (matcher.find()) imagesPathList.add(0, i);
+        for (File file : fileArray) {
+            if (file == null) continue;
+            Matcher matcher = pattern.matcher(file.toString());
+            if (matcher.find()) imagesPathList.add(0, file);
         }
         return imagesPathList;
     }

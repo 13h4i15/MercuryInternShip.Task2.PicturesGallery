@@ -40,9 +40,9 @@ public class FullImageViewFragment extends AppCompatDialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getActivity() == null || getArguments() == null || getArguments().getString(IMAGE_PATH_PARAMETER) == null) {
-            Toast.makeText(getContext(), R.string.dialog_loading_error, Toast.LENGTH_SHORT).show();
-            dismiss();
+            showToastAndDismiss(getString(R.string.dialog_loading_error));
         }
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.fragment_full_image_view, null);
@@ -57,8 +57,7 @@ public class FullImageViewFragment extends AppCompatDialogFragment {
     @Override
     public void onStart() {
         if (getDialog() == null || getDialog().getWindow() == null) {
-            Toast.makeText(getContext(), R.string.dialog_loading_error, Toast.LENGTH_SHORT).show();
-            dismiss();
+            showToastAndDismiss(getString(R.string.dialog_loading_error));
         }
         picassoImageLoader(picturePathFile, imageView);
         super.onStart();
@@ -79,9 +78,13 @@ public class FullImageViewFragment extends AppCompatDialogFragment {
 
                     @Override
                     public void onError(Exception e) {
-                        Toast.makeText(getContext(), R.string.image_loading_error, Toast.LENGTH_SHORT).show();
-                        dismiss();
+                        showToastAndDismiss(getString(R.string.image_loading_error));
                     }
                 });
+    }
+
+    private void showToastAndDismiss(String toastText) {
+        Toast.makeText(getContext(), toastText, Toast.LENGTH_SHORT).show();
+        dismiss();
     }
 }
