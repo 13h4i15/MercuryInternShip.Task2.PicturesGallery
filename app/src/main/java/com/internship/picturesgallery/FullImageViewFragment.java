@@ -23,6 +23,8 @@ import java.io.File;
 
 public class FullImageViewFragment extends AppCompatDialogFragment {
     private static final String IMAGE_PATH_PARAMETER = "path";
+    private static final ColorDrawable TRANSPARENT_BACKGROUND = new ColorDrawable(Color.TRANSPARENT);
+
     private File picturePathFile;
     private ImageView imageView;
 
@@ -75,7 +77,7 @@ public class FullImageViewFragment extends AppCompatDialogFragment {
                 .into(imageView, new Callback() {
                     @Override
                     public void onSuccess() {
-                        getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                        getDialog().getWindow().setBackgroundDrawable(TRANSPARENT_BACKGROUND);
                     }
 
                     @Override
