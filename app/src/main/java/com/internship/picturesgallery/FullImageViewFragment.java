@@ -26,7 +26,7 @@ public class FullImageViewFragment extends AppCompatDialogFragment {
     private File picturePathFile;
     private ImageView imageView;
 
-    public static FullImageViewFragment newInstance(String picturePathParameter) {
+    public static FullImageViewFragment newInstance(@NonNull String picturePathParameter) {
         FullImageViewFragment fragment = new FullImageViewFragment();
         Bundle args = new Bundle();
         args.putString(IMAGE_PATH_PARAMETER, picturePathParameter);
