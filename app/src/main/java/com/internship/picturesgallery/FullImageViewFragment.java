@@ -1,8 +1,8 @@
 package com.internship.picturesgallery;
 
 import android.app.Dialog;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,15 +10,14 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import java.io.File;
 
@@ -39,16 +38,15 @@ public class FullImageViewFragment extends AppCompatDialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getActivity() == null || getArguments() == null || getArguments().getString(IMAGE_PATH_PARAMETER) == null) {
+            Toast.makeText(getContext(), R.string.dialog_loading_error, Toast.LENGTH_SHORT).show();
+            dismiss();
+        }
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.fragment_full_image_view, null);
 
-        if (getArguments() != null && getArguments().getString(IMAGE_PATH_PARAMETER) != null) {
-            picturePathFile = new File(getArguments().getString(IMAGE_PATH_PARAMETER));
-        } else {
-            Toast.makeText(getContext(), getString(R.string.image_loading_error), Toast.LENGTH_SHORT).show();
-            dismiss();
-        }
+        picturePathFile = new File(getArguments().getString(IMAGE_PATH_PARAMETER));
 
         imageView = view.findViewById(R.id.fragment_picture_element);
         imageView.setOnClickListener(v -> dismiss());
@@ -57,41 +55,33 @@ public class FullImageViewFragment extends AppCompatDialogFragment {
 
     @Override
     public void onStart() {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int newLayoutHeight = displayMetrics.heightPixels * getResources().getInteger(R.integer.fragment_scale_height) / 100;
-        int newLayoutWidth = displayMetrics.widthPixels * getResources().getInteger(R.integer.fragment_scale_width) / 100;
-        picassoImageLoader(picturePathFile, imageView, newLayoutWidth, newLayoutHeight);
+        if (getDialog() == null || getDialog().getWindow() == null || getDialog().getWindow().getWindowManager() == null) {
+            Toast.makeText(getContext(), R.string.dialog_loading_error, Toast.LENGTH_SHORT).show();
+            dismiss();
+        }
+        picassoImageLoader(picturePathFile, imageView);
         super.onStart();
     }
 
-    private void picassoImageLoader(File sourceFile, ImageView imageView, int layoutWidth, int layoutHeight) {
+    private void picassoImageLoader(@NonNull File sourceFile, @NonNull ImageView imageView) {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getDialog().getWindow().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         Picasso.get()
                 .load(sourceFile)
                 .placeholder(R.drawable.ic_placeholder)
-                .resize(layoutWidth, layoutHeight)
-                .into(new Target() {
+                .fit()
+                .centerInside()
+                .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
+                .into(imageView, new Callback() {
                     @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        try {
-                            getDialog().getWindow().setLayout(bitmap.getWidth(), bitmap.getHeight());
-                        } finally {
-                            imageView.setLayoutParams(new LinearLayout.LayoutParams(bitmap.getWidth(), bitmap.getHeight()));
-                            imageView.requestLayout();
-                            imageView.setImageBitmap(bitmap);
-                        }
+                    public void onSuccess() {
+                        getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                     }
 
                     @Override
-                    public void onBitmapFailed(Exception e, Drawable errorDrawable) {
-                        imageView.setImageDrawable(errorDrawable);
-                        Log.e(Constants.LOADING_ERROR_TAG, e.toString());
+                    public void onError(Exception e) {
+                        Toast.makeText(getContext(), R.string.image_loading_error, Toast.LENGTH_SHORT).show();
                         dismiss();
-                    }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-                        imageView.setImageDrawable(placeHolderDrawable);
                     }
                 });
     }

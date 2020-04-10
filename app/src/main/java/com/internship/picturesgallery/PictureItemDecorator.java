@@ -18,17 +18,11 @@ final class PictureItemDecorator extends RecyclerView.ItemDecoration {
         int position = parent.getChildAdapterPosition(view);
         int dimen = view.getResources().getDimensionPixelSize(R.dimen.picture_item_margin);
 
-        outRect.set(dimen, dimen, dimen, dimen);
+        outRect.set(dimen, 0, 0, dimen);
 
-        if (position < spanCount)
-            outRect.left = 0;
-        else if (position > parent.getChildCount() - spanCount)
-            outRect.right = 0;
+        if (position < spanCount) outRect.left = 0;
 
-        if (position % spanCount == 0)
-            outRect.top = 0;
-        else if (position % spanCount == spanCount - 1)
-            outRect.bottom = 0;
+        if (position % spanCount == spanCount - 1) outRect.bottom = 0;
     }
 }
 

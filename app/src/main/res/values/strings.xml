@@ -2,6 +2,7 @@
     <string name="app_name">PicturesGallery</string>
     <string name="permissions_lack_toast">App doesn\'t have needed permissions</string>
     <string name="image_loading_error">Can\'t load this image</string>
+    <string name="dialog_loading_error">Can\'t load dialog</string>
     <string name="choose_folder_title">Choose folder</string>
     <string name="images_loading_error_toast">Can\'t load images from folder</string>
 </resources>

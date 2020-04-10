@@ -1,5 +1,5 @@
 package com.internship.picturesgallery;
 
-public interface Constants {
+interface Constants {
     String LOADING_ERROR_TAG = "loadingDataError";
 }
