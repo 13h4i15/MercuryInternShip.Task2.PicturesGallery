@@ -66,8 +66,6 @@ public class FullImageViewFragment extends AppCompatDialogFragment {
     }
 
     private void picassoImageLoader(@NonNull File sourceFile, @NonNull ImageView imageView) {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getDialog().getWindow().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         Picasso.get()
                 .load(sourceFile)
                 .placeholder(R.drawable.ic_placeholder)
