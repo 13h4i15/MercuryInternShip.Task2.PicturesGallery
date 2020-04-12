@@ -42,6 +42,11 @@ final class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecycle
         return pathList.size();
     }
 
+    @Override
+    public long getItemId(int position) {
+        return pathList.get(position).hashCode();
+    }
+
     public void setOnClickListener(@NonNull OnImageClickListener onClickListener) {
         this.onClickListener = onClickListener;
     }

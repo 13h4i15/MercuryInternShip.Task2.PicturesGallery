@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
         picturesRecyclerAdapter.setOnClickListener(getOnClickImageListener());
         picturesRecyclerAdapter.setOnLongClickListener(getOnLongClickImageListener());
+        picturesRecyclerAdapter.setHasStableIds(true);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(new PictureItemDecorator(spanCount));
