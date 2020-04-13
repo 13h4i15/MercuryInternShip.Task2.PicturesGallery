@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">PicturesGallery</string>
     <string name="permissions_lack_toast">App doesn\'t have needed permissions.</string>
-    <string name="dialog_loading_error">Can\'t load dialog.</string>
-    <string name="images_loading_error_toast">Can\'t load images from folder, please reload application.</string>
+    <string name="images_loading_error_toast">Can\'t load images from folder or folder is empty, please reload application.</string>
 </resources>

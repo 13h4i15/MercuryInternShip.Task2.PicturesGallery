@@ -128,6 +128,8 @@ public class MainActivity extends AppCompatActivity {
 
         try (Cursor cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection,
                 where, whereArgs, MediaStore.Images.Media.DATE_ADDED)) {
+            if (cursor == null) return imagesPathList;
+
             int columnIndexId = cursor.getColumnIndex(MediaStore.Images.Media._ID);
             while (cursor.moveToNext()) {
                 long id = cursor.getLong(columnIndexId);
@@ -144,6 +146,9 @@ public class MainActivity extends AppCompatActivity {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(loadedPathList -> {
+                    if (loadedPathList.size() == 0) {
+                        Toast.makeText(this, R.string.images_loading_error_toast, Toast.LENGTH_SHORT).show();
+                    }
                     picturesRecyclerAdapter.setPathList(loadedPathList);
                     if (recyclerView.getLayoutManager() != null && recyclerState != null) {
                         recyclerView.getLayoutManager().onRestoreInstanceState(recyclerState);
@@ -151,7 +156,6 @@ public class MainActivity extends AppCompatActivity {
                 }, exception -> {
                     Log.e(Constants.LOADING_ERROR_TAG, exception.toString());
                     Toast.makeText(this, R.string.images_loading_error_toast, Toast.LENGTH_SHORT).show();
-                    finish();
                 });
     }
 
