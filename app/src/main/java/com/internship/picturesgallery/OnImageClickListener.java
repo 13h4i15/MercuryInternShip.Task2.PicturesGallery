@@ -1,9 +1,9 @@
 package com.internship.picturesgallery;
 
+import android.net.Uri;
+
 import androidx.annotation.NonNull;
 
-import java.io.File;
-
 interface OnImageClickListener {
-    void onClick(@NonNull File sourceFile);
+    void onClick(@NonNull Uri sourceFile);
 }

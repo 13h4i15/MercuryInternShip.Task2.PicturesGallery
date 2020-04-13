@@ -1,5 +1,6 @@
 package com.internship.picturesgallery;
 
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,12 +11,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 final class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecyclerAdapter.RecyclerViewHolder> {
-    private final List<File> pathList = new ArrayList<>();
+    private final List<Uri> pathList = new ArrayList<>();
     private OnImageClickListener onClickListener, onLongClickListener;
 
     @NonNull
@@ -55,13 +55,13 @@ final class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecycle
         this.onLongClickListener = onLongClickListener;
     }
 
-    public void setPathList(@NonNull List<File> pathList) {
+    public void setPathList(@NonNull List<Uri> pathList) {
         this.pathList.clear();
         this.pathList.addAll(pathList);
         notifyDataSetChanged();
     }
 
-    private static void picassoImageLoader(@NonNull File sourceFile, @NonNull ImageView imageView) {
+    private static void picassoImageLoader(@NonNull Uri sourceFile, @NonNull ImageView imageView) {
         Picasso.get()
                 .load(sourceFile)
                 .placeholder(R.drawable.ic_placeholder)
@@ -69,6 +69,7 @@ final class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecycle
                 .centerCrop()
                 .into(imageView);
     }
+
 
     public final static class RecyclerViewHolder extends RecyclerView.ViewHolder {
         private final ImageView image;
