@@ -65,6 +65,7 @@ final class PicturesRecyclerAdapter extends RecyclerView.Adapter<PicturesRecycle
         Picasso.get()
                 .load(sourceFile)
                 .placeholder(R.drawable.ic_placeholder)
+                .error(R.drawable.ic_error)
                 .fit()
                 .centerCrop()
                 .into(imageView);

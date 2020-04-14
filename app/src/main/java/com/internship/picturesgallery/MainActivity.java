@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
         String[] projection = {MediaStore.Images.Media._ID};
         List<Uri> imagesPathList = new ArrayList<>();
 
-        String folder = "%DCIM/Camera%";
+        String folder = "%VK%";
         String[] whereArgs = new String[]{folder};
         String mediaColumn = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ? MediaStore.Images.Media.RELATIVE_PATH
                 : MediaStore.Images.Media.DATA;

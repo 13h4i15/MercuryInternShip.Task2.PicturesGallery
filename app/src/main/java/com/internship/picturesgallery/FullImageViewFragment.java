@@ -38,13 +38,16 @@ public class FullImageViewFragment extends AppCompatDialogFragment {
         imageView.setOnClickListener(v -> dismiss());
         Uri picturePathFile = requireArguments().getParcelable(IMAGE_PATH_PARAMETER);
         picassoImageLoader(picturePathFile, imageView);
-        return builder.setView(view).create();
+        Dialog dialog = builder.setView(view).create();
+        dialog.getWindow().setBackgroundDrawable(getResources().getDrawable(R.drawable.transparent_background));
+        return dialog;
     }
 
     private void picassoImageLoader(Uri sourceFile, @NonNull ImageView imageView) {
         Picasso.get()
                 .load(sourceFile)
                 .placeholder(R.drawable.ic_placeholder)
+                .error(R.drawable.ic_error)
                 .fit()
                 .centerInside()
                 .into(imageView);
