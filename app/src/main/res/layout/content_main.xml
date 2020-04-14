@@ -8,4 +8,8 @@
     tools:context=".MainActivity"
     tools:showIn="@layout/activity_main">
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/pictures_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
